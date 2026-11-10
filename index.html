@@ -2,347 +2,139 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeanmatematico · Resuelve problemas paso a paso</title>
-<meta name="description" content="Jeanmatematico resuelve operaciones y ecuaciones de primer y segundo grado y explica cada paso.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jean_matematico</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
 <style>
-:root{--paper:#fbfcff;--grid:#dbe5f6;--ink:#14213d;--blue:#1d4ed8;--mut:#4d5a74;--hl:#ffe066;--red:#d62839;--line:#c4d2ea}
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1b1d2a;--mu:#6b7085;--ac:#ff5a5f;--ac2:#4c6fff;--bd:#e4e6ef;--grid:#e8eaf2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--card:#1b1e2a;--tx:#eceef7;--mu:#9aa0b8;--bd:#2c3044;--grid:#262a3c;color-scheme:dark}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);line-height:1.55;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
-.nav{display:flex;align-items:center;justify-content:space-between;padding-top:22px;padding-bottom:22px}
-.brand{display:flex;align-items:center;gap:10px;font:700 22px Georgia,"Times New Roman",serif;color:var(--ink);text-decoration:none}
-.mark{display:grid;place-items:center;width:38px;height:38px;border:2px solid var(--ink);background:var(--hl);font-size:22px;border-radius:4px;box-shadow:3px 3px 0 var(--ink)}
-.nav div{display:flex;align-items:center}
-.sello{height:46px;width:auto;margin-left:22px}
-.sello-f{height:38px;width:auto;background:#fff;padding:3px;border-radius:4px;margin-right:12px;vertical-align:middle}
-.nav a:not(.brand){color:var(--ink);font-weight:600;text-decoration:none;margin-left:22px;border-bottom:2px solid transparent}
-.nav a:not(.brand):hover{border-color:var(--blue)}
-a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.hero{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;padding:36px 0 30px}
-h1{font:700 clamp(32px,5vw,52px)/1.08 Georgia,"Times New Roman",serif;margin:0 0 16px;letter-spacing:-.01em}
-.hero p{font-size:18px;color:var(--mut);margin:0 0 22px;max-width:46ch}
-.try{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;color:var(--mut)}
-.chip{font:600 15px Cambria,Georgia,serif;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:4px;padding:5px 11px;cursor:pointer}
-.chip:hover{background:var(--hl)}
-.solver{background:#fff;border:2px solid var(--ink);border-radius:4px;box-shadow:8px 8px 0 var(--ink);padding:22px}
-.solver label{font-weight:700;display:block;margin-bottom:8px}
-.row{display:flex;gap:10px}
-#inp{flex:1;min-width:0;font:24px Cambria,Georgia,serif;padding:12px 14px;border:2px solid var(--ink);border-radius:4px;background:var(--paper);color:var(--ink)}
-.go{font:700 16px system-ui,sans-serif;background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:4px;padding:0 20px;cursor:pointer}
-.go:hover{background:#1e40af}
-.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
-.pad button{font:20px Cambria,Georgia,serif;padding:11px 0;background:#fff;border:2px solid var(--line);border-radius:4px;color:var(--ink);cursor:pointer}
-.pad button:hover{border-color:var(--ink);background:var(--paper)}
-.pad .op{background:#eaf0ff;color:var(--blue);font-weight:700}
-.pad .del{background:#fff3c4}
-.pad .eq{grid-column:span 3}
-.drop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px dashed var(--ink);border-radius:4px;padding:12px 14px;background:var(--paper);margin-bottom:14px}
-.drop.over{background:var(--hl)}
-.drop p{margin:0;font-size:14px;color:var(--mut);flex:1 1 220px}
-.up{font:700 15px system-ui,sans-serif;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:4px;padding:8px 14px;cursor:pointer}
-.up:hover{background:var(--hl)}
-.file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
-.sheet.small{padding:16px 22px;margin:14px 0}
-.sheet.small h2{font-size:20px}
-.head{font:700 24px Georgia,serif;margin:26px 0 0}
-#hist:empty{display:none}
-#out:empty{display:none}
-.sheet{background:#fff;border:2px solid var(--ink);border-left:8px double var(--red);border-radius:4px;box-shadow:8px 8px 0 var(--ink);padding:26px 28px;margin:26px 0 10px;scroll-margin-top:16px}
-.sheet h2{font:700 28px Georgia,serif;margin:0 0 6px}
-.prob{font:22px Cambria,Georgia,serif;color:var(--mut);margin-bottom:18px;overflow-wrap:anywhere}
-.steps{list-style:none;margin:0;padding:0;counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:6px 10px;padding:12px 0;border-top:1px solid var(--line)}
-.steps li::before{content:counter(s)".";font:italic 700 22px Georgia,serif;color:var(--blue)}
-.steps b{font-weight:600}
-.m{grid-column:2;font:24px Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}
-.ans{margin-top:14px;padding-top:16px;border-top:2px solid var(--ink)}
-.ans span{display:inline-block;font:700 28px Cambria,Georgia,serif;background:linear-gradient(transparent 38%,var(--hl) 38%);padding:0 6px;overflow-wrap:anywhere}
-.err{border:2px solid var(--red);border-left-width:8px;background:#fff;color:var(--red);padding:14px 18px;border-radius:4px;font-weight:600;margin:26px 0 10px}
-.kinds{padding:34px 0 56px}
-.kinds h2{font:700 30px Georgia,serif;margin:0 0 14px}
-.kind{display:grid;grid-template-columns:1.1fr 1fr 1.6fr;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--ink);background:rgba(251,252,255,.9)}
-.kind:last-child{border-bottom:1px solid var(--ink)}
-.kind h3{margin:0;font-size:17px}
-.kind p{margin:0;color:var(--mut)}
-footer{background:var(--ink);color:#dfe6f6;padding:22px 0;font-size:14px}
-footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:820px){.hero{grid-template-columns:1fr;gap:28px}.kind{grid-template-columns:1fr;gap:6px}.solver,.sheet{box-shadow:5px 5px 0 var(--ink)}}
-@media(max-width:480px){.nav div a{display:none}.sheet{padding:20px 16px}}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:8px 0 2px}h1 span{color:var(--ac)}
+p.s{color:var(--mu);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 8px;color:var(--ac2);text-transform:uppercase;letter-spacing:.04em}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:0;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid var(--bd);background:var(--bg);color:var(--tx)}
+input[type=text]:focus{outline:none;border-color:var(--ac2)}
+button,label.b{font:inherit;border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:var(--bd);color:var(--tx);display:inline-block}
+button.p{background:var(--ac);color:#fff;font-weight:600}
+.keys button{padding:8px 11px;font-size:15px}
+.chips button{font-size:14px;background:transparent;border:1px solid var(--bd);color:var(--mu)}
+#pv{max-width:100%;max-height:160px;border-radius:10px;margin-top:8px;display:none}
+#msg{color:var(--mu);font-size:14px;margin-top:8px}
+canvas{width:100%;height:300px;border-radius:12px;background:var(--bg);display:block;touch-action:none}
+code{background:var(--bg);padding:2px 6px;border-radius:6px;font-size:15px;word-break:break-all}
+.k{display:inline-block;margin:2px 0}
+ul{margin:4px 0 0;padding-left:20px}li{margin:3px 0}
+.ft{color:var(--mu);font-size:13px;text-align:center;margin:18px 0}
 </style>
 </head>
 <body>
-<header class="wrap nav">
-  <a class="brand" href="#resolver"><span class="mark" aria-hidden="true">∑</span>Jeanmatematico</a>
-  <div><a href="#resolver">Resolver</a><a href="#tipos">Qué resuelve</a><img class="sello" src="sello-espe.png" alt="Sello de la ESPE" onerror="this.remove()"></div>
-</header>
-<main class="wrap">
-  <section class="hero" id="resolver">
-    <div>
-      <h1>Escribe el problema y mira cómo se resuelve</h1>
-      <p>Jeanmatematico calcula operaciones y ecuaciones de primer y segundo grado, y te explica cada paso para que entiendas el resultado.</p>
-      <div class="try" id="ex"><span>Prueba con:</span></div>
-    </div>
-    <div class="solver">
-      <label for="inp">Tu problema</label>
-      <div class="row">
-        <input id="inp" type="text" placeholder="Ej. 2x + 3 = 11" autocomplete="off" spellcheck="false" aria-describedby="ayuda">
-        <button class="go" id="go" type="button">Resolver</button>
-      </div>
-      <div class="pad" id="pad" role="group" aria-label="Teclado matemático"></div>
-      <div class="drop" id="drop">
-        <p>¿Tienes varios problemas? Sube un archivo de texto (.txt o .md) con un problema por línea, o arrástralo aquí.</p>
-        <button class="up" id="up" type="button">Subir archivo</button>
-        <input class="file" id="file" type="file" accept=".txt,.md,text/plain,text/markdown" tabindex="-1" aria-hidden="true">
-      </div>
-      <div class="try" id="hist" aria-label="Problemas recientes"></div>
-      <p id="ayuda" style="margin:12px 0 0;font-size:14px;color:var(--mut)">Usa x como incógnita. Ejemplo: 3(x − 2) = x + 4</p>
-    </div>
-  </section>
-  <section id="out" aria-live="polite"></section>
-  <section class="kinds" id="tipos">
-    <h2>Qué resuelve</h2>
-    <div id="kinds"></div>
-  </section>
+<main>
+<h1>Jean_<span>matematico</span></h1>
+<p class="s" style="font-weight:600;color:var(--tx);margin-bottom:4px">Proyecto del estudiante Jean Tovar, Universidad de las Fuerzas Armadas ESPE</p>
+<p class="s">Escribe tu función o toma una foto del ejercicio y obtén dominio, raíces, derivadas, extremos, límites, asíntotas y gráfica paso a paso. Gratis y sin registro.</p>
+
+<div class="card">
+ <div class="row"><input id="in" type="text" placeholder="f(x) = x^2 - 4x + 3" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text"><button class="p" id="go">Resolver</button></div>
+ <div class="row keys" style="margin-top:8px" id="keys"></div>
+ <div class="row chips" style="margin-top:8px" id="ex"></div>
+ <div class="row" style="margin-top:10px">
+  <label class="b">📷 Tomar foto<input type="file" id="cam" accept="image/*" capture="environment" hidden></label>
+  <label class="b">🖼 Subir imagen<input type="file" id="up" accept="image/*" hidden></label>
+ </div>
+ <img id="pv" alt="Foto del ejercicio">
+ <div id="msg"></div>
+</div>
+
+<div id="out"></div>
+<p class="ft">Los resultados numéricos son aproximados (barrido en −100 ≤ x ≤ 100). Verifica siempre los valores importantes.</p>
 </main>
-<footer><div class="wrap"><span><img class="sello-f" src="sello-espe.png" alt="Sello de la ESPE" onerror="this.remove()">Jeanmatematico</span><span>Proyecto universitario · Universidad de las Fuerzas Armadas ESPE</span></div></footer>
-
 <script>
-"use strict";
-const $=id=>document.getElementById(id);
-const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
-const EPS=1e-9;
-
-/* ---------- Polinomios: [c0, c1, c2] ---------- */
-const trim=p=>{p=p.slice();while(p.length>1&&Math.abs(p[p.length-1])<EPS)p.pop();return p};
-const add=(a,b)=>{const r=[];for(let i=0;i<Math.max(a.length,b.length);i++)r[i]=(a[i]||0)+(b[i]||0);return trim(r)};
-const neg=a=>a.map(v=>-v);
-const mul=(a,b)=>{const r=Array(a.length+b.length-1).fill(0);a.forEach((u,i)=>b.forEach((v,j)=>{r[i+j]+=u*v}));const t=trim(r);if(t.length>3)throw new Error("Por ahora resuelvo hasta segundo grado (x²).");return t};
-const evalP=(p,x)=>p.reduce((s,c,i)=>s+c*Math.pow(x,i),0);
-
-/* ---------- Lectura del texto ---------- */
-function tokenize(s){
-  s=s.toLowerCase().replace(/\s+/g,"").replace(/,/g,".").replace(/[×·]/g,"*").replace(/[÷:]/g,"/").replace(/[−–—]/g,"-").replace(/²/g,"^2").replace(/³/g,"^3");
-  const re=/\d+\.?\d*|\.\d+|[a-z]|[-+*\/^()]/y,t=[];
-  while(re.lastIndex<s.length){
-    const i=re.lastIndex,m=re.exec(s);
-    if(!m)throw new Error("No entiendo el símbolo «"+s[i]+"». Usa números, x, + − × ÷ ^ y paréntesis.");
-    t.push(m[0]);
-  }
-  return t;
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const KEYS=["x","^","(",")","+","−","*","/","√(","ln(","sen(","cos(","tan(","e^","π","⌫","C"];
+$("#keys").innerHTML=KEYS.map(k=>`<button>${k}</button>`).join("");
+$("#keys").onclick=e=>{if(e.target.tagName!=="BUTTON")return;const k=e.target.textContent,i=$("#in");if(k==="C")i.value="";else if(k==="⌫")i.value=i.value.slice(0,-1);else i.value+=k;i.focus()};
+const EX=["x^2-4x+3","(x^2-1)/(x-2)","sin(x)/x","e^x-x","ln(x)/x","x^3-3x"];
+$("#ex").innerHTML="<span style='color:var(--mu);font-size:14px;align-self:center'>Ejemplos:</span>"+EX.map(k=>`<button>${k}</button>`).join("");
+$("#ex").onclick=e=>{if(e.target.tagName==="BUTTON"){$("#in").value=e.target.textContent;solve()}};
+$("#go").onclick=solve;$("#in").onkeydown=e=>{if(e.key==="Enter")solve()};
+const say=t=>$("#msg").textContent=t||"";
+const fix=s=>s.replace(/√/g,"sqrt").replace(/\bln\b/gi,"log").replace(/\bsen\b/gi,"sin").replace(/\btg\b/gi,"tan").replace(/π/g,"pi").replace(/[−–]/g,"-").replace(/[·×]/g,"*").replace(/,/g,".").replace(/^\s*(f\s*\(\s*x\s*\)|y)\s*=/i,"").trim();
+const F=x=>{if(!isFinite(x))return x>0?"∞":x<0?"−∞":"indefinido";if(Math.abs(x)<1e-9)return"0";const r=Math.round(x);return(Math.abs(x-r)<1e-6?String(r):String(+x.toFixed(4))).replace("-","−")};
+const mk=src=>{const c=math.compile(src);c.evaluate({x:1.2345});return x=>{try{const v=c.evaluate({x});return typeof v==="number"&&isFinite(v)?v:NaN}catch(e){return NaN}}};
+const r6=x=>Math.round(x*1e6)/1e6;
+function roots(f,a=-50,b=50,n=5000){const r=[],h=(b-a)/n;let px=a,py=f(a);for(let i=1;i<=n;i++){const x=a+h*i,y=f(x);if(isFinite(py)&&isFinite(y)){if(y===0)r.push(x);else if(py*y<0){let lo=px,hi=x;for(let k=0;k<60;k++){const m=(lo+hi)/2;f(lo)*f(m)<=0?hi=m:lo=m}const z=(lo+hi)/2;if(Math.abs(f(z))<1e-4)r.push(z)}}px=x;py=y}return r.sort((p,q)=>p-q).filter((v,i,A)=>i===0||Math.abs(v-A[i-1])>1e-5)}
+function domain(f){const A=-100,B=100,N=8000,h=(B-A)/N,runs=[];let i=0;while(i<=N){if(isNaN(f(A+i*h))){let j=i;while(j<=N&&isNaN(f(A+j*h)))j++;runs.push([i,j-1]);i=j}else i++}
+const ref=(d,u)=>{for(let k=0;k<60;k++){const m=(d+u)/2;isNaN(f(m))?u=m:d=m}const t=(d+u)/2;return{t:r6(t),c:!isNaN(f(r6(t)))}};
+return runs.map(([s,e])=>{const L=s>0?ref(A+(s-1)*h,A+s*h):null,R=e<N?ref(A+(e+1)*h,A+e*h):null;return{L,R}})}
+function limit(f,s){const a=f(s*1e6),b=f(s*1e9);if(isNaN(a)||isNaN(b))return null;if(Math.abs(a-b)<1e-3*(1+Math.abs(a)))return{v:b};return Math.abs(b)>Math.abs(a)?{v:b>0?Infinity:-Infinity}:null}
+function intervals(pts,g,lo=-100,hi=100){const c=[lo,...pts,hi],o=[];for(let i=0;i<c.length-1;i++){const m=(c[i]+c[i+1])/2,v=g(m);if(isNaN(v))continue;const a=i===0?"−∞":F(c[i]),b=i===c.length-2?"∞":F(c[i+1]);o.push({txt:`(${a}, ${b})`,pos:v>0})}return o}
+let G={};
+function solve(){
+ const raw=$("#in").value;if(!raw.trim()){say("Escribe una función, por ejemplo x^2 - 4x + 3");return}
+ const src=fix(raw);let f,d1,d2,s1,s2,ast;
+ try{ast=math.parse(src);f=mk(src)}catch(e){say("No pude entender esa función. Usa x como variable, por ejemplo: (x^2-1)/(x-2)");$("#out").innerHTML="";return}
+ say("");
+ try{s1=math.simplify(math.derivative(src,"x")).toString();s2=math.simplify(math.derivative(s1,"x")).toString();d1=mk(s1);d2=mk(s2)}catch(e){}
+ const h=1e-5;d1=d1||(x=>(f(x+h)-f(x-h))/(2*h));d2=d2||(x=>(d1(x+h)-d1(x-h))/(2*h));
+ const S=[],add=(t,b)=>S.push(`<div class="card"><h2>${t}</h2>${b}</div>`);
+ const dom=domain(f),dtxt=[],asy=[],holes=[];
+ dom.forEach(({L,R})=>{const sy=(p,c,lt)=>lt?(c?`x ≤ ${F(p)}`:`x < ${F(p)}`):(c?`x ≥ ${F(p)}`:`x > ${F(p)}`);
+  if(L&&R&&R.t-L.t<1e-3){const p=(L.t+R.t)/2;dtxt.push(`x ≠ ${F(p)}`);const a=f(p-1e-6),b=f(p+1e-6);if(Math.abs(a)>1e4||Math.abs(b)>1e4)asy.push(p);else holes.push([p,b])}
+  else if(L&&R)dtxt.push(`${sy(L.t,L.c,1)} o ${sy(R.t,R.c,0)}`);
+  else if(R)dtxt.push(sy(R.t,R.c,0));else if(L)dtxt.push(sy(L.t,L.c,1));else dtxt.push("la función no está definida en el rango analizado");
+  [L,R].forEach(b=>{if(b&&!b.c&&Math.abs(f(b.t+(b===L?-1:1)*1e-7))>1e5&&!asy.includes(b.t))asy.push(b.t)})});
+ add("1 · Dominio",`<span class="k">Dom f: ${dtxt.length?esc(dtxt.join(" y ")):"ℝ (todos los reales)"}</span>`);
+ const rt=roots(f),ex=[];const crit=roots(d1);crit.forEach(c=>{if(Math.abs(f(c))<1e-6&&!rt.some(r=>Math.abs(r-c)<1e-4))rt.push(c)});rt.sort((a,b)=>a-b);
+ add("2 · Cortes con los ejes",`<ul><li>Con el eje Y: f(0) = ${isNaN(f(0))?"no existe":F(f(0))}</li><li>Con el eje X (f(x) = 0): ${rt.length?rt.map(r=>"x = "+F(r)).join(", "):"no se encontraron en [−50, 50]"}</li></ul>`);
+ if(s1){const R=new Set();ast.traverse(n=>{if(n.isOperatorNode){if(n.op==="^")R.add("regla de la potencia y de la exponencial");if(n.op==="/")R.add("regla del cociente");if(n.op==="*"&&n.args.every(a=>!a.isConstantNode))R.add("regla del producto");if(n.op==="+"||n.op==="-")R.add("derivar término a término")}if(n.isFunctionNode)R.add("derivada de "+n.fn.name+" con regla de la cadena")});
+  add("3 · Derivadas",`<p>Reglas: ${[...R].join("; ")||"constantes y x"}.</p><ul><li>f′(x) = <code>${esc(s1)}</code></li><li>f″(x) = <code>${esc(s2)}</code></li></ul>`)}
+ const ci=crit.filter(c=>!isNaN(f(c))).map(c=>{const a=d1(c-1e-3),b=d1(c+1e-3),t=a<0&&b>0?"mínimo local":a>0&&b<0?"máximo local":"punto crítico sin extremo";return`<li>x = ${F(c)}: ${t}, f(${F(c)}) = ${F(f(c))}</li>`});
+ const mi=intervals(crit,d1).map(i=>`<li>${i.txt}: ${i.pos?"crece ↗":"decrece ↘"}</li>`);
+ add("4 · Crecimiento y extremos",`<p>Se resuelve f′(x) = 0 y se estudia el signo de f′:</p><ul>${ci.join("")||"<li>Sin puntos críticos en [−50, 50]</li>"}${mi.join("")}</ul>`);
+ const inf=roots(d2).filter(c=>!isNaN(f(c)));
+ add("5 · Concavidad",`<p>Se resuelve f″(x) = 0 y se estudia el signo de f″:</p><ul>${inf.map(c=>`<li>Inflexión en x = ${F(c)}, f(${F(c)}) = ${F(f(c))}</li>`).join("")}${intervals(inf,d2).map(i=>`<li>${i.txt}: ${i.pos?"cóncava hacia arriba ∪":"cóncava hacia abajo ∩"}</li>`).join("")}</ul>`);
+ const lp=limit(f,1),ln=limit(f,-1),li=[];
+ li.push(`lím x→+∞ f(x) = ${lp?F(lp.v):"no determinado"}`);li.push(`lím x→−∞ f(x) = ${ln?F(ln.v):"no determinado"}`);
+ asy.forEach(p=>li.push(`Asíntota vertical: x = ${F(p)}`));holes.forEach(([p,v])=>li.push(`Hueco en x = ${F(p)} (el límite vale ${F(v)})`));
+ if(lp&&isFinite(lp.v))li.push(`Asíntota horizontal (derecha): y = ${F(lp.v)}`);if(ln&&isFinite(ln.v)&&(!lp||Math.abs(ln.v-lp.v)>1e-6))li.push(`Asíntota horizontal (izquierda): y = ${F(ln.v)}`);
+ if(lp&&!isFinite(lp.v)){const m=f(1e6)/1e6;if(isFinite(m)&&Math.abs(m)>1e-4)li.push(`Posible asíntota oblicua: y ≈ ${F(m)}x + ${F(f(1e6)-m*1e6)}`)}
+ add("6 · Límites y asíntotas",`<ul>${li.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`);
+ const pts=[...rt.map(x=>({x,y:0,c:"#ff5a5f"})),...crit.filter(c=>!isNaN(f(c))).map(x=>({x,y:f(x),c:"#4c6fff"})),...inf.map(x=>({x,y:f(x),c:"#2fb67c"}))];
+ const xs=pts.map(p=>p.x).concat(asy),span=xs.length?Math.max(...xs.map(Math.abs)):0,w=Math.min(Math.max(span*1.4,6),60);
+ G={f,x0:-w,x1:w,pts,asy};
+ $("#out").innerHTML=`<div class="card"><h2>Gráfica</h2><canvas id="cv"></canvas><div class="row" style="margin-top:8px"><button id="zi">＋ Acercar</button><button id="zo">－ Alejar</button><button id="zr">Restablecer</button></div><p style="color:var(--mu);font-size:13px;margin:8px 0 0">● raíces  ● extremos  ● inflexiones</p></div>`+S.join("");
+ const z=k=>{const c=(G.x0+G.x1)/2,hw=(G.x1-G.x0)/2*k;G.x0=c-hw;G.x1=c+hw;draw()};
+ $("#zi").onclick=()=>z(.6);$("#zo").onclick=()=>z(1.6);$("#zr").onclick=()=>{G.x0=-w;G.x1=w;draw()};
+ draw();$("#out").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function parse(tk){
-  let i=0;const peek=()=>tk[i];
-  const startsAtom=t=>t!==undefined&&(/^[\d.]/.test(t)||/^[a-z]$/.test(t)||t==="(");
-  function expr(){let v=term();while(peek()==="+"||peek()==="-"){const o=tk[i++],r=term();v=o==="+"?add(v,r):add(v,neg(r))}return v}
-  function term(){
-    let v=unary();
-    for(;;){
-      const t=peek();
-      if(t==="*"){i++;v=mul(v,unary())}
-      else if(t==="/"){i++;const d=unary();if(d.length>1)throw new Error("No puedo dividir entre una expresión con x.");if(Math.abs(d[0])<EPS)throw new Error("No se puede dividir entre cero.");v=v.map(c=>c/d[0])}
-      else if(startsAtom(t)){v=mul(v,power())}
-      else break;
-    }
-    return v;
-  }
-  function unary(){if(peek()==="-"){i++;return neg(unary())}if(peek()==="+"){i++;return unary()}return power()}
-  function power(){
-    const b=atom();
-    if(peek()==="^"){
-      i++;const e=unary();
-      if(e.length>1||e[0]<0||!Number.isInteger(e[0])||e[0]>1000)throw new Error("El exponente debe ser un número entero positivo.");
-      let r=[1];for(let k=0;k<e[0];k++)r=mul(r,b);return r;
-    }
-    return b;
-  }
-  function atom(){
-    const t=tk[i++];
-    if(t===undefined)throw new Error("La expresión está incompleta.");
-    if(/^[\d.]/.test(t))return [parseFloat(t)];
-    if(t==="x")return [0,1];
-    if(/^[a-z]$/.test(t))throw new Error("Solo uso la incógnita x.");
-    if(t==="("){const v=expr();if(tk[i++]!==")")throw new Error("Falta cerrar un paréntesis.");return v}
-    throw new Error("Algo no cuadra cerca de «"+t+"».");
-  }
-  const v=expr();
-  if(i<tk.length)throw new Error("Algo no cuadra cerca de «"+tk[i]+"».");
-  return v;
-}
-
-/* ---------- Formato ---------- */
-function fmt(n){
-  if(Math.abs(n)<EPS)return "0";
-  const r=Math.round(n);
-  if(Math.abs(n-r)<1e-9)return String(r).replace("-","−");
-  for(let d=2;d<=1000;d++){const p=Math.round(n*d);if(Math.abs(n*d-p)<1e-9)return (p<0?"−":"")+Math.abs(p)+"/"+d}
-  return String(+n.toFixed(4)).replace("-","−");
-}
-const fmtP=n=>n<0?"("+fmt(n)+")":fmt(n);
-const approx=n=>fmt(n).includes("/")?" ≈ "+String(+n.toFixed(4)).replace("-","−"):"";
-function polyStr(p){
-  let out="";
-  for(let k=p.length-1;k>=0;k--){
-    const c=p[k];
-    if(Math.abs(c)<EPS&&p.length>1)continue;
-    const a=Math.abs(c),f=fmt(a);
-    const co=(k>0&&Math.abs(a-1)<1e-9)?"":(k>0&&f.includes("/")?"("+f+")":f);
-    const body=co+(k===0?"":"x"+(k>1?"²":""));
-    out+=out===""?(c<0?"−":"")+body:(c<0?" − ":" + ")+body;
-  }
-  return out||"0";
-}
-
-/* ---------- Resolver ---------- */
-function solve(raw){
-  const parts=raw.split("=");
-  if(parts.length>2)throw new Error("Solo puede haber un signo «=».");
-  const P=parts.map(x=>{if(!x.trim())throw new Error("Falta una parte de la ecuación.");return parse(tokenize(x))});
-  const steps=[];
-  if(P.length===1){
-    const p=P[0];
-    if(p.length===1){
-      steps.push(["Calculamos la expresión",fmt(p[0])+approx(p[0])]);
-      return {label:"Resultado",result:fmt(p[0])+approx(p[0]),steps};
-    }
-    steps.push(["Desarrollamos y agrupamos los términos semejantes",polyStr(p)]);
-    return {label:"Expresión simplificada",result:polyStr(p),steps};
-  }
-  const [L,R]=P;
-  steps.push(["Simplificamos cada lado",polyStr(L)+" = "+polyStr(R)]);
-  const p=add(L,neg(R));
-  steps.push(["Pasamos todo al lado izquierdo",polyStr(p)+" = 0"]);
-
-  if(p.length===1){
-    const ident=Math.abs(p[0])<EPS;
-    steps.push(["Queda solo un número",fmt(p[0])+" = 0  "+(ident?"(siempre se cumple)":"(es imposible)")]);
-    return {label:"Resultado",result:ident?"Infinitas soluciones":"No tiene solución",steps};
-  }
-  if(p.length===2){
-    const a=p[1],b=p[0],x=-b/a;
-    if(Math.abs(b)>EPS)steps.push(["Pasamos el término independiente al otro lado",polyStr([0,a])+" = "+fmt(-b)]);
-    if(Math.abs(a-1)>EPS)steps.push(["Dividimos ambos lados entre "+fmt(a),"x = "+fmt(-b)+" ÷ "+fmtP(a)+" = "+fmt(x)+approx(x)]);
-    steps.push(["Comprobamos sustituyendo x",fmt(evalP(L,x))+" = "+fmt(evalP(R,x))]);
-    return {label:"Solución",result:"x = "+fmt(x)+approx(x),steps};
-  }
-  const [c,b,a]=p,D=b*b-4*a*c;
-  steps.push(["Identificamos los coeficientes de ax² + bx + c = 0","a = "+fmt(a)+",   b = "+fmt(b)+",   c = "+fmt(c)]);
-  steps.push(["Calculamos el discriminante Δ = b² − 4ac","Δ = "+fmtP(b)+"² − 4·"+fmtP(a)+"·"+fmtP(c)+" = "+fmt(D)]);
-  let result;
-  if(Math.abs(D)<EPS){
-    const x=-b/(2*a);
-    steps.push(["Como Δ = 0, hay una solución doble: x = −b / 2a","x = "+fmt(x)+approx(x)]);
-    result="x = "+fmt(x)+approx(x);
-  }else if(D>0){
-    const s=Math.sqrt(D),x1=(-b+s)/(2*a),x2=(-b-s)/(2*a);
-    steps.push(["Como Δ > 0, hay dos soluciones reales: x = (−b ± √Δ) / 2a","x₁ = "+fmt(x1)+",   x₂ = "+fmt(x2)]);
-    steps.push(["Comprobamos sustituyendo en la ecuación",fmt(evalP(p,x1))+" = 0   y   "+fmt(evalP(p,x2))+" = 0"]);
-    result="x₁ = "+fmt(x1)+",  x₂ = "+fmt(x2);
-  }else{
-    const re=-b/(2*a),im=Math.sqrt(-D)/(2*Math.abs(a));
-    steps.push(["Como Δ < 0, no hay soluciones reales: las soluciones son complejas","x = "+fmt(re)+" ± "+fmt(im)+"i"]);
-    result="x = "+fmt(re)+" ± "+fmt(im)+"i";
-  }
-  return {label:"Solución",result,steps};
-}
-
-//UI
-/* ---------- Interfaz ---------- */
-const inp=$("inp"),out=$("out");
-let hist=[];
-try{hist=JSON.parse(localStorage.getItem("jm-hist")||"[]").filter(x=>typeof x==="string").slice(0,5)}catch(e){hist=[]}
-
-function showError(msg){out.replaceChildren(el("div","err",msg))}
-function buildSheet(raw,small){
-  const r=solve(raw);
-  const sheet=el("div","sheet"+(small?" small":""));
-  sheet.append(el("h2",0,small?"Resultado":"Solución paso a paso"),el("div","prob",raw));
-  const ol=el("ol","steps");
-  r.steps.forEach(s=>{const li=el("li");li.append(el("b",0,s[0]),el("div","m",s[1]));ol.append(li)});
-  const ans=el("div","ans");
-  ans.append(el("div",0,r.label+": "),el("span",0,r.result));
-  sheet.append(ol,ans);
-  return sheet;
-}
-function remember(raw){
-  hist=[raw].concat(hist.filter(h=>h!==raw)).slice(0,5);
-  try{localStorage.setItem("jm-hist",JSON.stringify(hist))}catch(e){}
-  drawHist();
-}
-function run(raw){
-  raw=String(raw).trim();
-  if(!raw){showError("Escribe un problema para resolver, por ejemplo 2x + 3 = 11.");return}
-  try{out.replaceChildren(buildSheet(raw,false));remember(raw)}
-  catch(e){showError(e.message||"No pude resolver este problema.")}
-  out.scrollIntoView({block:"start"});
-}
-
-/* ---------- Archivos ---------- */
-const MAX_LINES=50,MAX_BYTES=200000;
-const cleanLine=l=>l.replace(/^\s*[-*]\s+/,"").replace(/^\s*(?:\d+|[a-h])[.)]\s+/,"").trim();
-function runMany(text,name){
-  const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/).map(cleanLine).filter(l=>l&&!l.startsWith("#"));
-  if(!lines.length){showError("El archivo no tiene problemas. Escribe uno por línea.");return}
-  const used=lines.slice(0,MAX_LINES);
-  let ok=0;const box=document.createDocumentFragment();
-  used.forEach(l=>{
-    try{box.append(buildSheet(l,true));ok++}
-    catch(e){box.append(el("div","err",l+"  →  "+(e.message||"no pude resolverlo")))}
-  });
-  const extra=lines.length>MAX_LINES?" (leí las primeras "+MAX_LINES+" líneas)":"";
-  out.replaceChildren(el("h2","head","Archivo «"+name+"»: "+ok+" de "+used.length+" problemas resueltos"+extra),box);
-  out.scrollIntoView({block:"start"});
-}
-function handleFile(f){
-  if(!f)return;
-  if(!/\.(txt|md)$/i.test(f.name)&&!/^text\//.test(f.type)){showError("Por ahora solo leo archivos de texto (.txt o .md) con un problema por línea. Las imágenes y los PDF todavía no son compatibles.");return}
-  if(f.size>MAX_BYTES){showError("El archivo es demasiado grande. El máximo es 200 KB.");return}
-  const rd=new FileReader();
-  rd.onerror=()=>showError("No pude leer el archivo. Prueba con otro.");
-  rd.onload=()=>runMany(String(rd.result),f.name);
-  rd.readAsText(f);
-}
-function chip(t){const b=el("button","chip",t);b.type="button";b.onclick=()=>{inp.value=t;run(t)};return b}
-function drawHist(){
-  const h=$("hist");h.replaceChildren();
-  if(hist.length){h.append(el("span",0,"Recientes:"));hist.forEach(t=>h.append(chip(t)))}
-}
-function ins(t){
-  const a=inp.selectionStart==null?inp.value.length:inp.selectionStart,b=inp.selectionEnd==null?a:inp.selectionEnd;
-  inp.setRangeText(t,a,b,"end");inp.focus();
-}
-const KEYS=[["7"],["8"],["9"],["÷","op"],["⌫","del"],["4"],["5"],["6"],["×","op"],["C","del"],["1"],["2"],["3"],["−","op"],["("],["0"],["."],["x"],["+","op"],[")"],["x²","op","^2"],["^","op"],["=","op eq"]];
-KEYS.forEach(k=>{
-  const b=el("button",k[1]||"",k[0]);b.type="button";
-  b.onclick=()=>{
-    if(k[0]==="C"){inp.value="";inp.focus()}
-    else if(k[0]==="⌫"){
-      const a=inp.selectionStart==null?inp.value.length:inp.selectionStart,e=inp.selectionEnd==null?a:inp.selectionEnd;
-      if(a===e&&a>0)inp.setRangeText("",a-1,a,"end");else inp.setRangeText("",a,e,"end");
-      inp.focus();
-    }else ins(k[2]||k[0]);
-  };
-  $("pad").append(b);
-});
-["2x + 3 = 11","x² − 5x + 6 = 0","3(x − 2) = x + 4","(3 + 5) × 2 − 4"].forEach(t=>$("ex").append(chip(t)));
-[["Operaciones","(3 + 5) × 2 − 4","Suma, resta, multiplicación, división, potencias y paréntesis."],
- ["Ecuaciones de primer grado","3(x − 2) = x + 4","Despeja x y comprueba la solución."],
- ["Ecuaciones de segundo grado","x² − 5x + 6 = 0","Usa el discriminante y encuentra soluciones reales o complejas."]].forEach(k=>{
-  const row=el("div","kind");
-  row.append(el("h3",0,k[0]),chip(k[1]),el("p",0,k[2]));
-  $("kinds").append(row);
-});
-const drop=$("drop");
-$("up").onclick=()=>$("file").click();
-$("file").onchange=e=>{handleFile(e.target.files[0]);e.target.value=""};
-["dragenter","dragover"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add("over")}));
-["dragleave","drop"].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove("over")}));
-drop.addEventListener("drop",e=>handleFile(e.dataTransfer.files[0]));
-$("go").onclick=()=>run(inp.value);
-inp.addEventListener("keydown",e=>{if(e.key==="Enter")run(inp.value)});
-drawHist();
+function draw(){const c=$("#cv");if(!c||!G.f)return;const r=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;c.width=W*r;c.height=H*r;const g=c.getContext("2d");g.scale(r,r);
+ const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim(),{f,x0,x1}=G,ys=[];
+ for(let i=0;i<=W;i++){const y=f(x0+(x1-x0)*i/W);if(isFinite(y))ys.push(y)}ys.sort((a,b)=>a-b);
+ let lo=ys.length?ys[Math.floor(ys.length*.03)]:-5,hi=ys.length?ys[Math.floor(ys.length*.97)]:5;if(hi-lo<1e-6){lo-=1;hi+=1}const p=(hi-lo)*.2;lo-=p;hi+=p;
+ const X=x=>(x-x0)/(x1-x0)*W,Y=y=>H-(y-lo)/(hi-lo)*H,nice=v=>{const e=Math.pow(10,Math.floor(Math.log10(v))),m=v/e;return(m<1.5?1:m<3.5?2:m<7.5?5:10)*e};
+ g.font="11px system-ui";g.fillStyle=col("--mu");g.strokeStyle=col("--grid");g.lineWidth=1;
+ const sx=nice((x1-x0)/6),sy=nice((hi-lo)/5);
+ for(let x=Math.ceil(x0/sx)*sx;x<=x1;x+=sx){g.beginPath();g.moveTo(X(x),0);g.lineTo(X(x),H);g.stroke();g.fillText(F(x),X(x)+2,Math.min(Math.max(Y(0),10),H-3))}
+ for(let y=Math.ceil(lo/sy)*sy;y<=hi;y+=sy){g.beginPath();g.moveTo(0,Y(y));g.lineTo(W,Y(y));g.stroke();g.fillText(F(y),Math.min(Math.max(X(0),0),W-30)+3,Y(y)-2)}
+ g.strokeStyle=col("--mu");g.lineWidth=1.5;g.beginPath();g.moveTo(X(0),0);g.lineTo(X(0),H);g.moveTo(0,Y(0));g.lineTo(W,Y(0));g.stroke();
+ g.setLineDash([5,4]);g.strokeStyle="#ff5a5f";G.asy.forEach(a=>{g.beginPath();g.moveTo(X(a),0);g.lineTo(X(a),H);g.stroke()});g.setLineDash([]);
+ g.strokeStyle=col("--ac2");g.lineWidth=2.5;g.beginPath();let on=false,py=0;
+ for(let i=0;i<=W;i+=.5){const y=f(x0+(x1-x0)*i/W);if(!isFinite(y)){on=false;continue}const yy=Y(y);if(on&&Math.abs(yy-py)>H*.7)on=false;on?g.lineTo(i,yy):g.moveTo(i,yy);on=true;py=yy}g.stroke();
+ G.pts.forEach(q=>{if(q.x<x0||q.x>x1)return;g.fillStyle=q.c;g.beginPath();g.arc(X(q.x),Y(q.y),5,0,7);g.fill()})}
+addEventListener("resize",draw);
+const photo=async file=>{if(!file)return;const pv=$("#pv");pv.src=URL.createObjectURL(file);pv.style.display="block";say("Leyendo el ejercicio…");
+ let s=null;try{s=window.claude&&await window.claude.use("sample")}catch(e){}
+ if(!s){say("La lectura automática de fotos solo está disponible al abrir este enlace dentro de Claude. Escribe la función con el teclado de arriba.");return}
+ try{const l=await s.limits();if(!l.images){say("Este visor no permite leer imágenes. Escribe la función con el teclado.");return}
+  const r=await s("Extrae únicamente la función matemática f(x) de la imagen. Respóndela en texto plano usando x, ^, *, /, sqrt(), ln(), sin(), cos(), e^. Sin explicaciones ni la palabra f(x)=. Si hay varias, solo la primera.",{images:[file],modelTier:"quick"});
+  const t=(r.text||"").trim().split("\n")[0];if(!t)throw 0;$("#in").value=t;say("Leí: "+t+" (revísala antes de confiar en el resultado)");solve()}
+ catch(e){say("No pude leer la foto. Prueba con una imagen más nítida o escribe la función.")}};
+$("#cam").onchange=e=>photo(e.target.files[0]);$("#up").onchange=e=>photo(e.target.files[0]);
 </script>
 </body>
 </html>
